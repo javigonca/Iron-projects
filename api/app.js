@@ -3,7 +3,7 @@ const express = require("express");
 const logger = require("morgan");
 const createError = require("http-errors");
 
-
+//** Load configuration */
 require('./config/db.config')
 
 const app = express();
@@ -14,6 +14,7 @@ app.use((req, res, next) => {
   throw new Error("Boom");
 });
 
+//* Error Handling */
 app.use((req, res, next) => next(createError(404, "Route not found")));
 
 app.use((error, req, res, next) => {
