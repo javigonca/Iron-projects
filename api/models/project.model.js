@@ -1,12 +1,22 @@
 const mongoose = require('mongoose');
+const validations = require('../utils/validation');
 const Schema = mongoose.Schema;
 
 
+
+
 const projectSchema = new Schema ({
-  name:{
+  title:{
     type: String,
-    required: 'Project name is required',
-    minlength: [3, 'Project name needs at least 3 chars']
+    required: 'Project title is required',
+    minlength: [3, 'Project title needs at least 3 chars']
+  },
+  description:{
+    type: String,
+    required: 'Project description is required',
+    minlength: [10, 'Project description needs at least 10 chars']
+
+
   },
   authors: [{
     type: String,
@@ -15,16 +25,34 @@ const projectSchema = new Schema ({
   tags: [String],
   githubUrl: {
     type: String,
-    validator: function(url) {
-      try {
-        new URL(url);
-        return true
-      } catch(error) {
-        return false;
-      }
+    required: 'Project githubUrl is required',
+    validate: {
+      validator: validations.isValidUrl,
+        message: 'Not a valid github url'
+    }       
+  },
+  imageUrl:{
+    type: String,
+    required: 'Project imegeUrl is required',
+    validate: {
+      validator: validations.isValidUrl,
+        message: 'Not a valid github url'
+    }       
 
-    },
-    message: 'Not a valid github url' 
   }
+  
+}, { 
+  timestamps: true,
+  virtuals: true,
+  toJSON: {
+    transform: function (doc, ret) {
+      delete ret.__v
+      ret.id = ret._id;
+      delete ret._id;
+      return ret;
+    }
+  }
+})
 
-}, { timestamps: true })
+const Project = mongoose.model('Project', projectSchema);
+module.exports = Project;
